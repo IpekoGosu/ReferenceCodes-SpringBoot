@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${LOCAL_DB_URL}
+    username: ${LOCAL_DB_USERNAME}
+    password: ${LOCAL_DB_PASSWORD}
+  jpa:
+    hibernate:
+      auto_quote_keyword: create
+      ddl-auto: validate # 미리 만든 테이블에 검증만 하는 방식
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        use_sql_comments: true
+  cache:
+    type: redis
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+# JWT
+jwt:
+  secret: ${JWT_SECRET_KEY}
