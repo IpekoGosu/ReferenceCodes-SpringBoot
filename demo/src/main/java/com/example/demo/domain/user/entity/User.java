@@ -35,6 +35,14 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE", length = 30)
     private UserRole role;
+
+    /**
+     * 보안상 Setter 를 사용하지 않기에 별개의 메서드로 비밀번호 변경
+     * @param encodedPassword 인코딩 한 비밀번호
+     */
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 }
 
 // 먼저 테이블을 만들고 JPA 연결
