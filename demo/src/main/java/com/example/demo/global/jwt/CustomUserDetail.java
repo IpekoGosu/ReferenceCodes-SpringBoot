@@ -1,6 +1,8 @@
 package com.example.demo.global.jwt;
 
+import com.example.demo.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,10 +16,20 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetail implements UserDetailsService {
-
+    private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findOptionalByEmail(email)
+                .map(user -> createUserDetails(user))
+                .orElseThrow(() -> new UsernameNotFoundException("cannot find user"));
+    }
+
+    private UserDetails createUserDetails(com.example.demo.domain.user.entity.User user) {
+        return User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .roles(user.getRole().name())
+                .build();
     }
 }

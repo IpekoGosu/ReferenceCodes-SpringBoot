@@ -18,6 +18,7 @@ public enum ErrorCode {
     BAD_REQUEST(400, "잘못된 요청"),
     FORBIDDEN(403, "접근 권한 없음"), // 유효한 인증은 맞으나, 해당 권한으로 접근 불가,
     RESOURCE_NOT_FOUND(404, "리소스를 찾을 수 없음"),
+    DUPLICATE_RESOURCE(409, "이미 사용중인 리소스입니다"),
     INTERNAL_SERVER_ERROR(500, "내부 서버 오류");
 
     private final int httpStatus;

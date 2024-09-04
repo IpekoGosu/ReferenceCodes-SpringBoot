@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
@@ -56,7 +59,7 @@ public class SecurityConfig {
 
     @Component
     @Order(Ordered.HIGHEST_PRECEDENCE)
-    public class CorsFilter extends OncePerRequestFilter {
+    public static class CorsFilter extends OncePerRequestFilter {
         // Cors 제외할 도메인 목록
         private static final List<String> allowedOrigins = Arrays.asList(
                 "http://localhost:3000",
@@ -65,7 +68,7 @@ public class SecurityConfig {
 
         @Override
         protected void doFilterInternal(
-                HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
+                HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain
         ) throws ServletException, IOException {
             String origin = request.getHeader("Origin");
             if (allowedOrigins.contains(origin)) {
@@ -86,10 +89,13 @@ public class SecurityConfig {
                 filterChain.doFilter(request, response);
             }
         }
-
-        @Bean
-        public PasswordEn
     }
 
-
+    /**
+     * BCryptPasswordEncoder
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

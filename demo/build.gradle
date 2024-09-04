@@ -56,6 +56,9 @@ dependencies {
 
     // web flux & mono
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // apache http client (for cookie use)
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
 }
 
 tasks.named('test') {
