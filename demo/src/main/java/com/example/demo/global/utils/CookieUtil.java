@@ -49,6 +49,18 @@ public class CookieUtil {
         return cookieRefreshToken;
     }
 
+    public static String getAccessToken(HttpServletRequest request) {
+        jakarta.servlet.http.Cookie[] cookies = request.getCookies();
+
+        String cookieRefreshToken = "";
+        for (jakarta.servlet.http.Cookie cookie : cookies) {
+            if (cookie.getName().equals("Authorization")) {
+                cookieRefreshToken = cookie.getValue();
+            }
+        }
+        return cookieRefreshToken;
+    }
+
     public static void deleteRefreshTokenCookie(HttpServletRequest request, HttpServletResponse response) {
         CookieUtil.addCookie(response, "refreshToken", null, 0);
     }

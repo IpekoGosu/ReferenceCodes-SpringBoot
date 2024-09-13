@@ -13,4 +13,6 @@ public interface UserService {
     ResponseDto<?> login(UserRequestDto userRequestDto, HttpServletResponse response);
 
     ResponseDto<?> renewAccessToken(HttpServletRequest request);
+
+    ResponseDto<?> logout(HttpServletRequest request, HttpServletResponse response);
 }

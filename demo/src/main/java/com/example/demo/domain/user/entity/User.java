@@ -13,13 +13,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Builder
 @Entity(name = "USER")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseTimeEntity {
+public class User extends BaseTimeEntity implements UserDetails {
     @Id // primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY) // auto increment
     @Column(name = "USER_NO")
@@ -38,10 +44,53 @@ public class User extends BaseTimeEntity {
 
     /**
      * 보안상 Setter 를 사용하지 않기에 별개의 메서드로 비밀번호 변경
+     *
      * @param encodedPassword 인코딩 한 비밀번호
      */
     public void changePassword(String encodedPassword) {
         this.password = encodedPassword;
+    }
+
+    public User(String subject, String s, Collection<? extends GrantedAuthority> authorities) {
+        // Principal이 username을 사용할 수 있도록 매핑
+        this.email = subject;
+    }
+
+// ------------------USER_DETAILS---------------------------
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(this.role.getKey()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
 

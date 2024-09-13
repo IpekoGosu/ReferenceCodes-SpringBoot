@@ -20,7 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,7 +97,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseDto<?> renewAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseDto<?> renewAccessToken(HttpServletRequest request) {
         log.info("renew access token");
         // cookie에 있는 refresh token 찾기
         String refreshToken = CookieUtil.getRefreshTokenCookie(request);
@@ -115,7 +117,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseDto<?> logout()
+    public ResponseDto<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        log.info("logout");
+        String refreshToken = CookieUtil.getRefreshTokenCookie(request);
+        String accessToken = CookieUtil.getAccessToken(request);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            CookieUtil.deleteRefreshTokenCookie(request, response);
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
+            tokenRedisService.deleteRefreshToken(refreshToken);
+            tokenRedisService.addToBlacklist(accessToken);
+        }
+        return ResponseDto.success("로그아웃 성공", "");
+    }
 
 
     private boolean isValidPassword(String password) {
